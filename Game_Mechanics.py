@@ -19,21 +19,31 @@ class Turn:
 
                     piece_options.append(pos)
 
+
+
+
+
+
+
             return piece_options, piece_object
         else:
             pass
 
 
 
-    def get_new_place(self, mouse, obj):
+    def get_new_place(self, mouse, obj, _img, s):
 
 
 
         if obj.collidepoint(mouse):
             r = obj.topleft
-            print("pingo")
 
-            return r
+            t = tuple(r)
+
+            rect_pos = pygame.Rect(t, (80, 80))
+            moved_piece = Piece()
+            moved_piece.placement(t, _img, s)
+            return rect_pos
 
 
 if __name__ == "__main__":

@@ -20,6 +20,7 @@ black_pieces = {}
 selecting = False
 image_ = pygame.image.load("graphics/Pawn_Black.png").convert_alpha()
 places = {}
+df = pd.read_csv("Chess_piece_info.csv")
 
 class Square:
     def __init__(self, x_pos, y_pos):
@@ -57,32 +58,32 @@ class Board:
         # a dictionary of lists containing x y gamepy positions and classic chess positions
 
     def set_pieces(self):
-        df = pd.read_csv("Chess_piece_info.csv")
+
         for p in df.loc[:, "White-position"]:
 
             img = df.loc[df["White-position"] == p, "White-Image"].squeeze()
 
-            l_img = pygame.image.load(img).convert_alpha()
+
 
             test_piece = Piece()
 
-            piece_position = test_piece.placement(board.tile_objects[p], l_img, screen)
+            piece_position = test_piece.placement(board.tile_objects[p], img, screen)
 
             name = df.loc[df["White-position"] == p, "Piece"].squeeze()
 
             white_pieces["{}".format(name)] = piece_position # a dictionary of white_pieces
 
-            screen.blit(l_img, piece_position)
+
 
         for p in df.loc[:, "Black-position"]:
 
             img = df.loc[df["Black-position"] == p, "Black-Image"].squeeze()
 
-            l_img = pygame.image.load(img).convert_alpha()
+
 
             test_piece = Piece()
 
-            piece_position = test_piece.placement(board.tile_objects[p], l_img, screen)
+            piece_position = test_piece.placement(board.tile_objects[p], img, screen)
 
             name = df.loc[df["Black-position"] == p, "Piece"].squeeze()
 
@@ -145,12 +146,10 @@ while True:
 
                         n_piece = pieces.Piece
                         name = list(white_pieces.keys())[list(white_pieces.values()).index(selected_piece)]
-                        new_pos = w_turn.get_new_place(mouse, v)
-                        # print(new_pos)
-                        # y = tuple(new_pos)
-                        # rect_pos = pygame.Rect(y, (80, 80))
-                        print(selected_piece)
-                        print(new_pos)
+                        replace_img = df.loc[df["Piece"] == name, "White-Image"].squeeze()
+                        new_pos = w_turn.get_new_place(mouse, v, replace_img, screen)
+
+
                          #new_pos = new_piece.placement()
 
                     # Selected piece needs to be moved somehow to the new location, there should be a way to do this

@@ -49,8 +49,9 @@ class Piece:
         return move_options, attack_options
 
     def placement(self, pos, image, s):
-        piece_rectangle = image.get_rect(topleft=pos)
-        s.blit(image, piece_rectangle)
+        l_img = pygame.image.load(image).convert_alpha()
+        piece_rectangle = l_img.get_rect(topleft=pos)
+        s.blit(l_img, piece_rectangle)
         return piece_rectangle
         # Somewhere we should store data for each piece's starting positions
 
