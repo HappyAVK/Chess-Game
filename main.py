@@ -79,8 +79,6 @@ class Board:
 
             img = df.loc[df["Black-position"] == p, "Black-Image"].squeeze()
 
-
-
             test_piece = Piece()
 
             piece_position = test_piece.placement(board.tile_objects[p], img, screen)
@@ -89,7 +87,25 @@ class Board:
 
             black_pieces["{}".format(name)] = piece_position  # a dictionary of black_pieces
 
+    def reset_pieces(self):
+        for ind, va in white_pieces.items():
+            img = df.loc[df["Piece"] == ind, "White-Image"].squeeze()
+            pi = Piece()
+            r = pi.placement(pos=va[:2], image=img, s=screen)
 
+    def draw_board(self):
+        color=0
+        for X in range(0, 640, 80):
+
+            for Y in range(0, 640, 80):
+                if Y == 0:
+                    color += 1
+                square = Square(X, Y)
+                c = square.colour_decision(value=color)
+
+                square.instantiate(c)
+                board.add_tile(x=X, y=Y)
+                color += 1
 
 
 while True:
@@ -143,12 +159,18 @@ while True:
                     print(places)
 
                     for k, v in places.items():
+                        if v.collidepoint(mouse):
+                            n_piece = pieces.Piece
+                            name = list(white_pieces.keys())[list(white_pieces.values()).index(selected_piece)]
+                            replace_img = df.loc[df["Piece"] == name, "White-Image"].squeeze()
+                            new_board = Board()
+                            new_board.draw_board()
+                            new_pos = w_turn.get_new_place(mouse, v, replace_img, screen)
+                            white_pieces[name] = new_pos
+                            print(white_pieces[name])
 
-                        n_piece = pieces.Piece
-                        name = list(white_pieces.keys())[list(white_pieces.values()).index(selected_piece)]
-                        replace_img = df.loc[df["Piece"] == name, "White-Image"].squeeze()
-                        new_pos = w_turn.get_new_place(mouse, v, replace_img, screen)
-
+                            board.reset_pieces()
+                            selecting = False
 
                          #new_pos = new_piece.placement()
 
