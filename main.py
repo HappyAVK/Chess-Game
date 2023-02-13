@@ -1,8 +1,10 @@
 import pygame
 from sys import exit
 import pandas as pd
-from pieces import Piece
 
+import pieces
+from pieces import Piece
+from Game_Mechanics import Turn
 
 pygame.init()
 screen = pygame.display.set_mode((1366, 768))
@@ -13,7 +15,11 @@ Game_Start = False
 board_x = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 board_y = [8, 7, 6, 5, 4, 3, 2, 1]
 White_Turn = True
-
+white_pieces = {}
+black_pieces = {}
+selecting = False
+image_ = pygame.image.load("graphics/Pawn_Black.png").convert_alpha()
+places = {}
 
 class Square:
     def __init__(self, x_pos, y_pos):
@@ -53,21 +59,41 @@ class Board:
     def set_pieces(self):
         df = pd.read_csv("Chess_piece_info.csv")
         for p in df.loc[:, "White-position"]:
+
             img = df.loc[df["White-position"] == p, "White-Image"].squeeze()
+
             l_img = pygame.image.load(img).convert_alpha()
-            test_piece = Piece(l_img)
-            test_position = test_piece.placement(board.tile_objects[p])  # chess co-ordinates are similar to the ones
-            screen.blit(test_piece.image, test_position)
+
+            test_piece = Piece()
+
+            piece_position = test_piece.placement(board.tile_objects[p], l_img, screen)
+
+            name = df.loc[df["White-position"] == p, "Piece"].squeeze()
+
+            white_pieces["{}".format(name)] = piece_position # a dictionary of white_pieces
+
+            screen.blit(l_img, piece_position)
 
         for p in df.loc[:, "Black-position"]:
+
             img = df.loc[df["Black-position"] == p, "Black-Image"].squeeze()
+
             l_img = pygame.image.load(img).convert_alpha()
-            test_piece = Piece(l_img)
-            test_position = test_piece.placement(board.tile_objects[p])  # chess co-ordinates are similar to the ones
-            screen.blit(test_piece.image, test_position)
+
+            test_piece = Piece()
+
+            piece_position = test_piece.placement(board.tile_objects[p], l_img, screen)
+
+            name = df.loc[df["Black-position"] == p, "Piece"].squeeze()
+
+            black_pieces["{}".format(name)] = piece_position  # a dictionary of black_pieces
+
+
 
 
 while True:
+    pygame.display.update()
+    mouse = pygame.mouse.get_pos()
     # chess board setup
     if not Game_Start:
 
@@ -87,15 +113,55 @@ while True:
                 color += 1
 
         board.set_pieces()
-        print(board.tile_objects)
+
         # testing instantiation of a piece
 
         Game_Start = True
+    else:
+        mouse = pygame.mouse.get_pos()
+        for event in pygame.event.get():
 
-    for event in pygame.event.get():
+
+            if White_Turn:
+
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
+                    w_turn = Turn()
+                    for key, value in white_pieces.items():
+
+
+                        if not selecting:
+                            selections_, selected_piece = w_turn.start_move(piece=value, mousepos=mouse, selecting_=selecting)
+
+                        for index, i in enumerate(selections_):
+                            pos_option_rect = image_.get_rect(topleft=i)
+                            screen.blit(image_, pos_option_rect)
+                            places["place {}".format(index)] = pos_option_rect
+
+                            selecting = True
+                if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and selecting:
+                    print(places)
+
+                    for k, v in places.items():
+
+                        n_piece = pieces.Piece
+                        name = list(white_pieces.keys())[list(white_pieces.values()).index(selected_piece)]
+                        new_pos = w_turn.get_new_place(mouse, v)
+                        # print(new_pos)
+                        # y = tuple(new_pos)
+                        # rect_pos = pygame.Rect(y, (80, 80))
+                        print(selected_piece)
+                        print(new_pos)
+                         #new_pos = new_piece.placement()
+
+                    # Selected piece needs to be moved somehow to the new location, there should be a way to do this
+
+
+
+
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()
+
 
     pygame.display.update()
     clock.tick(60)

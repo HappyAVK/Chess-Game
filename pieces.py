@@ -2,10 +2,10 @@ import pygame
 
 
 class Piece:
-    def __init__(self, image):
-        self.movement = [0, -1, 0, -2]  # x and y var for pygame
-        self.attack = [1, -1, -1, -1]
-        self.image = image
+    def __init__(self):
+        self.movement = [0, -80, 0, -160]  # x and y var for pygame
+        self.attack = [80, -80, -80, -80]
+
         # self.alignment = alignment May a var for piece placement
 
     def get_move_and_attack_tiles(self, pos):
@@ -48,8 +48,9 @@ class Piece:
         move_options = [r for r in move_options if r not in attack_options]
         return move_options, attack_options
 
-    def placement(self, pos):
-        piece_rectangle = self.image.get_rect(topleft=pos)
+    def placement(self, pos, image, s):
+        piece_rectangle = image.get_rect(topleft=pos)
+        s.blit(image, piece_rectangle)
         return piece_rectangle
         # Somewhere we should store data for each piece's starting positions
 
@@ -59,6 +60,6 @@ class Piece:
 
 
 if __name__ == "__main__":
-    p = Piece(image="graphics/SaltzPog.png")
+    p = Piece()
     x, y = p.get_move_and_attack_tiles(pos=[4, 2])
     print(x, y)
