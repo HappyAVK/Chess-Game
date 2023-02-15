@@ -13,5 +13,5 @@ Knight-1,B1,B8,graphics/chess test2.png,graphics/blowfish.png
 Knight-2,G1,G8,graphics/chess test2.png,graphics/blowfish.png
 Castle-1,A1,H8,graphics/chess test2.png,graphics/blowfish.png
 Castle-2,H1,A8,graphics/chess test2.png,graphics/blowfish.png
-Queen,D1,D8,graphics/chess test2.png,graphics/blowfish.png
-King,E1,E8,graphics/chess test2.png,graphics/blowfish.png
+Queen-1,D1,D8,graphics/chess test2.png,graphics/blowfish.png
+King-1,E1,E8,graphics/chess test2.png,graphics/blowfish.png

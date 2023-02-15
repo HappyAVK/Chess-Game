@@ -1,33 +1,24 @@
 import pygame
-from pieces import Piece
+from pieces import Piece, DynamicPiece
 
 
 
 class Turn:
-    def start_move(self, piece, mousepos, selecting_):
-        piece_options = []
-        piece_object = 1
-        if not selecting_:
+    def start_move(self, piece, piece_list):
 
-            if piece.collidepoint(mousepos):
+        name = list(piece_list.keys())[list(piece_list.values()).index(piece)][:-2]
 
-                selected_piece = Piece()
-                x = selected_piece.get_move_and_attack_tiles(piece.topleft)[0]
+        selected_piece = DynamicPiece()
 
-                piece_object = piece
-                for pos in x:
+        m, a = selected_piece.identify(name)
+        print(m, a)
+        m_, _a = selected_piece.get_move_and_attack_tiles(piece.topleft, m, a)
+        m_and_a = m_ + _a
 
-                    piece_options.append(pos)
+        piece_object = piece
 
+        return m_and_a, piece_object
 
-
-
-
-
-
-            return piece_options, piece_object
-        else:
-            pass
 
 
 

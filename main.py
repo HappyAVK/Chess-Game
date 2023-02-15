@@ -84,12 +84,19 @@ class Board:
             piece_position = test_piece.placement(board.tile_objects[p], img, screen)
 
             name = df.loc[df["Black-position"] == p, "Piece"].squeeze()
-
-            black_pieces["{}".format(name)] = piece_position  # a dictionary of black_pieces
+            if name[:2] == "Pawn":
+                black_pieces["B{}".format(name)] = piece_position
+            else:
+                black_pieces["{}".format(name)] = piece_position  # a dictionary of black_pieces
 
     def reset_pieces(self):
         for ind, va in white_pieces.items():
             img = df.loc[df["Piece"] == ind, "White-Image"].squeeze()
+            pi = Piece()
+            r = pi.placement(pos=va[:2], image=img, s=screen)
+
+        for ind, va in black_pieces.items():
+            img = df.loc[df["Piece"] == ind, "Black-Image"].squeeze()
             pi = Piece()
             r = pi.placement(pos=va[:2], image=img, s=screen)
 
@@ -132,47 +139,48 @@ while True:
         board.set_pieces()
 
         # testing instantiation of a piece
-
+        print(board.tile_objects)
         Game_Start = True
     else:
         mouse = pygame.mouse.get_pos()
         for event in pygame.event.get():
 
-
             if White_Turn:
 
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1:
                     w_turn = Turn()
-                    for key, value in white_pieces.items():
+                    if not selecting:
+                        for key, value in white_pieces.items():
 
+                            if value.collidepoint(mouse):
+                                selections_, selected_piece = w_turn.start_move(piece=value, piece_list=white_pieces)
+                                name = list(white_pieces.keys())[list(white_pieces.values()).index(selected_piece)]
+                                for index, i in enumerate(selections_):
 
-                        if not selecting:
-                            selections_, selected_piece = w_turn.start_move(piece=value, mousepos=mouse, selecting_=selecting)
+                                    pos_option_rect = image_.get_rect(topleft=i)
+                                    screen.blit(image_, pos_option_rect)
+                                    places["place {}".format(index)] = pos_option_rect
 
-                        for index, i in enumerate(selections_):
-                            pos_option_rect = image_.get_rect(topleft=i)
-                            screen.blit(image_, pos_option_rect)
-                            places["place {}".format(index)] = pos_option_rect
-
-                            selecting = True
+                                selecting = True
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and selecting:
-                    print(places)
+
 
                     for k, v in places.items():
                         if v.collidepoint(mouse):
                             n_piece = pieces.Piece
-                            name = list(white_pieces.keys())[list(white_pieces.values()).index(selected_piece)]
+
                             replace_img = df.loc[df["Piece"] == name, "White-Image"].squeeze()
                             new_board = Board()
                             new_board.draw_board()
                             new_pos = w_turn.get_new_place(mouse, v, replace_img, screen)
                             white_pieces[name] = new_pos
-                            print(white_pieces[name])
+
 
                             board.reset_pieces()
                             selecting = False
-
-                         #new_pos = new_piece.placement()
+                            #White_Turn = False
+            if not White_Turn:
+                pass
 
                     # Selected piece needs to be moved somehow to the new location, there should be a way to do this
 
