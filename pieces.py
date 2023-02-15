@@ -154,8 +154,7 @@ class DynamicPiece(Piece):
                 for check in move_list:
                     if check > 660 or check < 80:
                         move_list = []
-                    else:
-                        continue
+
 
 
                 move_options.append(move_list)
@@ -174,8 +173,7 @@ class DynamicPiece(Piece):
                 for check in attack_list:
                     if check > 660 or check < 80:
                         attack_list = []
-                    else:
-                        continue
+
 
                 attack_options.append(attack_list)
                 attack_list = []

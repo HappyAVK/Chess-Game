@@ -11,7 +11,7 @@ class Turn:
         selected_piece = DynamicPiece()
 
         m, a = selected_piece.identify(name)
-        print(m, a)
+
         m_, _a = selected_piece.get_move_and_attack_tiles(piece.topleft, m, a)
         m_and_a = m_ + _a
 

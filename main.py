@@ -142,7 +142,7 @@ while True:
         print(board.tile_objects)
         Game_Start = True
     else:
-        mouse = pygame.mouse.get_pos()
+
         for event in pygame.event.get():
 
             if White_Turn:
@@ -153,6 +153,7 @@ while True:
                         for key, value in white_pieces.items():
 
                             if value.collidepoint(mouse):
+                                places.clear()
                                 selections_, selected_piece = w_turn.start_move(piece=value, piece_list=white_pieces)
                                 name = list(white_pieces.keys())[list(white_pieces.values()).index(selected_piece)]
                                 for index, i in enumerate(selections_):
@@ -164,28 +165,24 @@ while True:
                                 selecting = True
                 if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and selecting:
 
-
                     for k, v in places.items():
                         if v.collidepoint(mouse):
                             n_piece = pieces.Piece
-
+                            print(places)
                             replace_img = df.loc[df["Piece"] == name, "White-Image"].squeeze()
                             new_board = Board()
                             new_board.draw_board()
                             new_pos = w_turn.get_new_place(mouse, v, replace_img, screen)
                             white_pieces[name] = new_pos
 
-
                             board.reset_pieces()
+
                             selecting = False
                             #White_Turn = False
             if not White_Turn:
+
                 pass
-
-                    # Selected piece needs to be moved somehow to the new location, there should be a way to do this
-
-
-
+                # Selected piece needs to be moved somehow to the new location, there should be a way to do this
 
         if event.type == pygame.QUIT:
             pygame.quit()
