@@ -1,8 +1,10 @@
 import pygame
 from pieces import Piece, DynamicPiece
-
-
-
+import pandas as pd
+from pieces import Piece
+df = pd.read_csv("Chess_piece_info.csv")
+from game_board import Board
+p_places = []
 class Turn:
     def start_move(self, piece, piece_list):
 
@@ -14,27 +16,60 @@ class Turn:
 
         m_, _a = selected_piece.get_move_and_attack_tiles(piece.topleft, m, a)
         m_and_a = m_ + _a
+        piece_check=[]
+        for k, s in piece_list.items():
+            piece_check.append(list(s.topleft))
 
+        m_and_a = [p for p in m_and_a if p not in piece_check]
         piece_object = piece
 
         return m_and_a, piece_object
 
+    def get_new_place(self, obj, _img, s):
 
+        r = obj.topleft
 
+        t = tuple(r)
 
-    def get_new_place(self, mouse, obj, _img, s):
+        rect_pos = pygame.Rect(t, (80, 80))
 
+        moved_piece = Piece()
 
+        moved_piece.placement(t, _img, s)
 
-        if obj.collidepoint(mouse):
-            r = obj.topleft
+        return rect_pos
 
-            t = tuple(r)
+    def instantiate_options(self, pieces, chosen_piece, scr):
+        image_ = pygame.image.load("graphics/Pawn_Black.png").convert_alpha()
 
-            rect_pos = pygame.Rect(t, (80, 80))
-            moved_piece = Piece()
-            moved_piece.placement(t, _img, s)
-            return rect_pos
+        t = Turn()
+        selections_, selected_piece = t.start_move(piece=chosen_piece, piece_list=pieces)
+
+        p_name = list(pieces.keys())[list(pieces.values()).index(selected_piece)]
+
+        for index, i in enumerate(selections_):
+
+            pos_option_rect = image_.get_rect(topleft=i)
+
+            scr.blit(image_, pos_option_rect)
+
+            p_places.append(pos_option_rect)
+        print(p_places)
+        return p_places, p_name
+
+    def make_final_move(self, _name, turn_type, p, old_list, scr):
+
+        replace_img = df.loc[df["Piece"] == _name, "White-Image"].squeeze()
+
+        new_board = Board()
+
+        new_board.draw_board(scr)
+
+        new_pos = turn_type.get_new_place(p, replace_img, scr)
+
+        old_list[_name] = new_pos
+
+        return old_list
 
 
 if __name__ == "__main__":
