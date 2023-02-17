@@ -39,30 +39,31 @@ def main_turn_loop(piece_list, sel, current_turn, poz_places, name):
 
                 board.draw_board(screen)
 
-                board.reset_pieces(df=df, scr=screen, w=piece_list, b=black_pieces)
+                board.reset_pieces(df=df, scr=screen, w=white_pieces, b=black_pieces)
 
                 current_turn = not current_turn
-                sel = False
+
                 name = ""
                 poz_places = []
+                sel = False
 
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and sel:  # Rclick to undo piece sel
 
         board.draw_board(screen)
 
-        board.reset_pieces(df=df, scr=screen, w=piece_list, b=black_pieces)
+        board.reset_pieces(df=df, scr=screen, w=white_pieces, b=black_pieces)
 
+        name = ""
+        poz_places = []
         sel = False
 
     return piece_list, sel, current_turn, poz_places, name
 
 
-
-
-
 while True:
     pygame.display.update()
     mouse = pygame.mouse.get_pos()
+
     # chess board setup
     if not Game_Start:
 
@@ -94,7 +95,7 @@ while True:
 
             else:
                 black_pieces, selecting, White_Turn, position_options, moving_name = main_turn_loop(black_pieces, selecting, White_Turn, position_options, moving_name)
-                #print("here", selecting)
+                print(position_options, selecting)
         if event.type == pygame.QUIT:
             pygame.quit()
             exit()

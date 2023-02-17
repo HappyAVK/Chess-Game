@@ -62,13 +62,15 @@ class Board:
             piece_position = test_piece.placement(self.tile_objects[p], img, scr)
 
             name = df.loc[df["Black-position"] == p, "Piece"].squeeze()
-            if name[:2] == "Pawn":
+            if name[:-2] == "Pawn":
                 b["B{}".format(name)] = piece_position
+                print(b)
             else:
                 b["{}".format(name)] = piece_position  # a dictionary of black_pieces
         return w, b
 
-    def reset_pieces(self, df, scr, w, b):
+    @staticmethod
+    def reset_pieces(df, scr, w, b):
         for ind, va in w.items():
             img = df.loc[df["Piece"] == ind, "White-Image"].squeeze()
             pi = pieces.Piece()
@@ -80,7 +82,8 @@ class Board:
             pi = pieces.Piece()
             r = pi.placement(pos=va[:2], image=img, s=scr)
 
-    def draw_board(self, scr):
+    @staticmethod
+    def draw_board(scr):
         color = 0
         for X in range(0, 640, 80):
 

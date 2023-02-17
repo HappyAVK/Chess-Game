@@ -1,12 +1,15 @@
 import pygame
-from pieces import Piece, DynamicPiece
+from pieces import DynamicPiece
 import pandas as pd
 from pieces import Piece
-df = pd.read_csv("Chess_piece_info.csv")
 from game_board import Board
 p_places = []
+df = pd.read_csv("Chess_piece_info.csv")
+
+
 class Turn:
-    def start_move(self, piece, piece_list):
+    @staticmethod
+    def start_move(piece, piece_list):
 
         name = list(piece_list.keys())[list(piece_list.values()).index(piece)][:-2]
 
@@ -16,7 +19,7 @@ class Turn:
 
         m_, _a = selected_piece.get_move_and_attack_tiles(piece.topleft, m, a)
         m_and_a = m_ + _a
-        piece_check=[]
+        piece_check = []
         for k, s in piece_list.items():
             piece_check.append(list(s.topleft))
 
@@ -25,7 +28,8 @@ class Turn:
 
         return m_and_a, piece_object
 
-    def get_new_place(self, obj, _img, s):
+    @staticmethod
+    def get_new_place(obj, _img, s):
 
         r = obj.topleft
 
@@ -39,7 +43,9 @@ class Turn:
 
         return rect_pos
 
-    def instantiate_options(self, pieces, chosen_piece, scr):
+    @staticmethod
+    def instantiate_options(pieces, chosen_piece, scr):
+        p_places.clear()
         image_ = pygame.image.load("graphics/Pawn_Black.png").convert_alpha()
 
         t = Turn()
@@ -57,7 +63,8 @@ class Turn:
         print(p_places)
         return p_places, p_name
 
-    def make_final_move(self, _name, turn_type, p, old_list, scr):
+    @staticmethod
+    def make_final_move(_name, turn_type, p, old_list, scr):
 
         replace_img = df.loc[df["Piece"] == _name, "White-Image"].squeeze()
 

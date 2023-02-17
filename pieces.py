@@ -51,7 +51,8 @@ class Piece:
         move_options = [r for r in move_options if r not in attack_options]
         return move_options, attack_options
 
-    def placement(self, pos, image, s):
+    @staticmethod
+    def placement(pos, image, s):
         l_img = pygame.image.load(image).convert_alpha()
         piece_rectangle = l_img.get_rect(topleft=pos)
         s.blit(l_img, piece_rectangle)
@@ -63,9 +64,10 @@ class Piece:
 # pieces through pygame
 
 
-
 class DynamicPiece(Piece):
-    def identify(self, ident):
+
+    @staticmethod
+    def identify(ident):
         move = []
         atk = []
 
@@ -100,8 +102,6 @@ class DynamicPiece(Piece):
                     move.append(-x_)
                     move.append(-x_)
                     move.append(0)
-
-
 
                 atk = move
             case "King":
@@ -155,8 +155,6 @@ class DynamicPiece(Piece):
                     if check > 660 or check < 80:
                         move_list = []
 
-
-
                 move_options.append(move_list)
                 move_list = []
 
@@ -173,7 +171,6 @@ class DynamicPiece(Piece):
                 for check in attack_list:
                     if check > 660 or check < 80:
                         attack_list = []
-
 
                 attack_options.append(attack_list)
                 attack_list = []
@@ -194,4 +191,4 @@ if __name__ == "__main__":
     tes = DynamicPiece()
     t, x = tes.identify(ident="Castle")
     print(tes.get_move_and_attack_tiles([4, 2], t, x))
-    #print(t)
+
