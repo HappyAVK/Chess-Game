@@ -60,13 +60,17 @@ class Turn:
             scr.blit(image_, pos_option_rect)
 
             p_places.append(pos_option_rect)
-        print(p_places)
+
         return p_places, p_name
 
     @staticmethod
     def make_final_move(_name, turn_type, p, old_list, scr):
+        if _name[:2] == "BP":
+            data_name = _name[1:]
+        else:
+            data_name = _name
 
-        replace_img = df.loc[df["Piece"] == _name, "White-Image"].squeeze()
+        replace_img = df.loc[df["Piece"] == data_name, "White-Image"].squeeze()
 
         new_board = Board()
 
@@ -79,18 +83,17 @@ class Turn:
         return old_list
 
 
-if __name__ == "__main__":
-
-    pygame.init()
-    screen = pygame.display.set_mode((1000, 1000))
-    pygame.display.set_caption("Chess")
-    clock = pygame.time.Clock()
-    playa = pygame.image.load('graphics/SaltzPog.png').convert_alpha()
-    player_rect = playa.get_rect(midbottom=(500, 600))
-    while True:
-        screen.blit(playa, player_rect)
-        print(player_rect.right, player_rect.top)
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                pygame.quit()
-                exit()
+# if __name__ == "__main__":
+        # pygame.init()
+    # screen = pygame.display.set_mode((1000, 1000))
+    # pygame.display.set_caption("Chess")
+    # clock = pygame.time.Clock()
+    # playa = pygame.image.load('graphics/Salt.png').convert_alpha()
+    # player_rect = playa.get_rect(mid=(500, 600))
+    # while True:
+    #     screen.blit(playa, player_rect)
+    #     print(player_rect.right, player_rect.top)
+    #     for event in pygame.event.get():
+    #         if event.type == pygame.QUIT:
+    #             pygame.quit()
+    #             exit()

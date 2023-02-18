@@ -4,6 +4,7 @@ board_x = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H']
 board_y = [8, 7, 6, 5, 4, 3, 2, 1]
 
 
+
 class Square:
     def __init__(self, x_pos, y_pos):
         self.x_pos = x_pos
@@ -11,7 +12,7 @@ class Square:
 
     def instantiate(self, colour, scr):
 
-        a_tile = pygame.draw.rect(scr, colour, (self.x_pos+100, self.y_pos+80, 80, 80))
+        pygame.draw.rect(scr, colour, (self.x_pos+100, self.y_pos+80, 80, 80))
 
     @staticmethod
     def colour_decision(value):
@@ -51,8 +52,8 @@ class Board:
 
             name = df.loc[df["White-position"] == p, "Piece"].squeeze()
 
-            w["{}".format(name)] = piece_position # a dictionary of white_pieces
-
+            w["{}".format(name)] = piece_position  # a dictionary of white_pieces
+        print(w)
         for p in df.loc[:, "Black-position"]:
 
             img = df.loc[df["Black-position"] == p, "Black-Image"].squeeze()
@@ -62,25 +63,33 @@ class Board:
             piece_position = test_piece.placement(self.tile_objects[p], img, scr)
 
             name = df.loc[df["Black-position"] == p, "Piece"].squeeze()
-            if name[:-2] == "Pawn":
+
+              # a dictionary of black_pieces
+            if name[:2] == "Pa":
                 b["B{}".format(name)] = piece_position
-                print(b)
             else:
-                b["{}".format(name)] = piece_position  # a dictionary of black_pieces
+                b["{}".format(name)] = piece_position
+
+        print(b)
         return w, b
 
     @staticmethod
     def reset_pieces(df, scr, w, b):
-        for ind, va in w.items():
+        for ind, var in w.items():
             img = df.loc[df["Piece"] == ind, "White-Image"].squeeze()
+
             pi = pieces.Piece()
 
-            r = pi.placement(pos=va[:2], image=img, s=scr)
+            pi.placement(pos=var[:2], image=img, s=scr)
 
         for ind, va in b.items():
-            img = df.loc[df["Piece"] == ind, "Black-Image"].squeeze()
+            if ind[:2] == "BP":
+                data_name = ind[1:]
+            else:
+                data_name = ind
+            img = df.loc[df["Piece"] == data_name, "Black-Image"].squeeze()
             pi = pieces.Piece()
-            r = pi.placement(pos=va[:2], image=img, s=scr)
+            pi.placement(pos=va[:2], image=img, s=scr)
 
     @staticmethod
     def draw_board(scr):
@@ -103,3 +112,6 @@ class Board:
                 b.add_tile(x=X, y=Y, sqr=square)
 
                 color += 1
+
+
+

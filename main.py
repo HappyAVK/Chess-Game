@@ -16,6 +16,8 @@ selecting = False
 df = pd.read_csv("Chess_piece_info.csv")
 position_options = []
 moving_name = ""
+
+
 def main_turn_loop(piece_list, sel, current_turn, poz_places, name):
     w_turn = Game_Mechanics.Turn()
 
@@ -47,7 +49,7 @@ def main_turn_loop(piece_list, sel, current_turn, poz_places, name):
                 poz_places = []
                 sel = False
 
-    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and sel:  # Rclick to undo piece sel
+    if event.type == pygame.MOUSEBUTTONDOWN and event.button == 3 and sel:  # Right click to undo piece sel
 
         board.draw_board(screen)
 
@@ -91,15 +93,18 @@ while True:
 
             if White_Turn:
 
-                white_pieces, selecting, White_Turn, position_options, moving_name = main_turn_loop(white_pieces, selecting, White_Turn, position_options, moving_name)
+                white_pieces, selecting, White_Turn, position_options,\
+                    moving_name = main_turn_loop(white_pieces, selecting,
+                                                 White_Turn, position_options, moving_name)
 
             else:
-                black_pieces, selecting, White_Turn, position_options, moving_name = main_turn_loop(black_pieces, selecting, White_Turn, position_options, moving_name)
-                print(position_options, selecting)
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            exit()
+                black_pieces, selecting, White_Turn, position_options, \
+                    moving_name = main_turn_loop(black_pieces, selecting,
+                                                 White_Turn, position_options, moving_name)
 
+            if event.type == pygame.QUIT:
+                pygame.quit()
+                exit()
 
     pygame.display.update()
     clock.tick(60)
