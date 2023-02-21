@@ -18,7 +18,7 @@ position_options = []
 moving_name = ""
 
 
-def main_turn_loop(piece_list, sel, current_turn, poz_places, name):
+def main_turn_loop(piece_list, sel, current_turn, poz_places, name, enemies):
     w_turn = Game_Mechanics.Turn()
 
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not sel:
@@ -27,7 +27,7 @@ def main_turn_loop(piece_list, sel, current_turn, poz_places, name):
 
             if value.collidepoint(mouse):
 
-                poz_places, name = w_turn.instantiate_options(piece_list, value, screen)
+                poz_places, name = w_turn.instantiate_options(piece_list, value, screen, enemies)
 
                 sel = True
 
@@ -94,13 +94,13 @@ while True:
             if White_Turn:
 
                 white_pieces, selecting, White_Turn, position_options,\
-                    moving_name = main_turn_loop(white_pieces, selecting,
-                                                 White_Turn, position_options, moving_name)
+                    moving_name = main_turn_loop(white_pieces, selecting, White_Turn, position_options, moving_name,
+                                                 black_pieces)
 
             else:
                 black_pieces, selecting, White_Turn, position_options, \
                     moving_name = main_turn_loop(black_pieces, selecting,
-                                                 White_Turn, position_options, moving_name)
+                                                 White_Turn, position_options, moving_name, white_pieces)
 
             if event.type == pygame.QUIT:
                 pygame.quit()

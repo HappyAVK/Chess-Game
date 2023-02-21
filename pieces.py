@@ -135,13 +135,14 @@ class DynamicPiece(Piece):
         return move, atk
 
     @staticmethod
-    def get_move_and_attack_tiles(pos, move_data, attack_data):
+    def get_move_and_attack_tiles(pos, move_data, attack_data, enemy_positions):
         # there is potentially a better way to do this, but this method locates adjacent tiles to either move of attack
         #  by converting the data to a list of a list, these values should correspond with the board dictionary
         move_list = []
         move_options = []
         attack_list = []
         attack_options = []
+        enemy_comprehended = []
 
         for i, m in enumerate(move_data):
             if (i % 2) == 0:
@@ -178,10 +179,11 @@ class DynamicPiece(Piece):
                 attack_options.append(attack_list)
                 attack_list = []
 
-                # After attack tiles are selected, we need to confirm if there is a piece there to attack (for pawns),
-                # for other pieces, if there is a piece to attack the position it
-                # needs to be removed from the regular move list to avoid overlap
-        attack_options = [v for v in attack_options if v != []]
+        for i, v in enemy_positions.items():
+            enemy_comprehended.append(list(v.topleft))
+
+            #  Enemy list is added to attack data to determine where the piece will actually consider an attack
+        attack_options = [v for v in attack_options if v != [] and v in enemy_comprehended]
         move_options = [r for r in move_options if r != [] and r not in attack_options]
 
         return move_options, attack_options
