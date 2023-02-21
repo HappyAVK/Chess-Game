@@ -187,3 +187,26 @@ class DynamicPiece(Piece):
         move_options = [r for r in move_options if r != [] and r not in attack_options]
 
         return move_options, attack_options
+
+    def pawn_check(self, pawn_obj, positions):
+        # Checking if pawns can move 1 or two spaces, and if they can attack
+        starting_place_keys = ['A2', 'B2', 'C2', 'D2', 'E2', 'F2', 'G2', 'H2', 'A7',
+                               'B7', 'C7', 'D7', 'E7', 'F7', 'G7', 'H7']
+
+        pos_to_check = []
+
+        for k in starting_place_keys:
+            pos_to_check.append(positions.get(k))
+
+        for y in pos_to_check:
+            if pawn_obj.topleft == y:
+
+                moved = False
+                break
+            else:
+                moved = True
+
+        return moved
+
+
+

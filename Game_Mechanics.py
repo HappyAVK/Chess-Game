@@ -9,9 +9,10 @@ df = pd.read_csv("Chess_piece_info.csv")
 
 class Turn:
     @staticmethod
-    def start_move(piece, piece_list, enemy_list):
+    def start_move(piece, piece_list, enemy_list, check_tiles):
         piece_check = []
         block_check = []
+        move_state = False
         name = list(piece_list.keys())[list(piece_list.values()).index(piece)][:-2]
 
         selected_piece = DynamicPiece()
@@ -19,13 +20,20 @@ class Turn:
         m, a = selected_piece.identify(name)
 
         m_, _a = selected_piece.get_move_and_attack_tiles(piece.topleft, m, a, enemy_list)
-        m_and_a = m_ + _a
 
         for k, s in piece_list.items():
             piece_check.append(list(s.topleft))  # first pass to remove blocked spaces
         tu = Turn()
+        if name == "Pawn" or name == "BPawn":
+            move_state = selected_piece.pawn_check(piece, check_tiles)
 
+            # Check if pawn has attacked
+        if move_state:
+            m_ = m_[:1]
+
+        m_and_a = m_ + _a
         block_check = piece_check + _a
+        # line 32 to 37 are to facilitate special pawn conditions
 
         more_blocked_spaces = tu.check_blocked_piece(piece_type=name, original_piece_pos=piece.topleft,
                                                      blocked_spaces=block_check)  # second pass to remove blocked spaces
@@ -54,12 +62,13 @@ class Turn:
         return rect_pos
 
     @staticmethod
-    def instantiate_options(pieces, chosen_piece, scr, opponents):
+    def instantiate_options(pieces, chosen_piece, scr, opponents, tiles):
         p_places.clear()
         image_ = pygame.image.load("graphics/Pawn_Black.png").convert_alpha()
 
         t = Turn()
-        selections_, selected_piece = t.start_move(piece=chosen_piece, piece_list=pieces, enemy_list=opponents)
+        selections_, selected_piece = t.start_move(piece=chosen_piece, piece_list=pieces, enemy_list=opponents,
+                                                   check_tiles=tiles)
 
         p_name = list(pieces.keys())[list(pieces.values()).index(selected_piece)]
 

@@ -18,7 +18,7 @@ position_options = []
 moving_name = ""
 
 
-def main_turn_loop(piece_list, sel, current_turn, poz_places, name, enemies):
+def main_turn_loop(piece_list, sel, current_turn, poz_places, name, enemies, board_tiles):
     w_turn = Game_Mechanics.Turn()
 
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not sel:
@@ -27,7 +27,7 @@ def main_turn_loop(piece_list, sel, current_turn, poz_places, name, enemies):
 
             if value.collidepoint(mouse):
 
-                poz_places, name = w_turn.instantiate_options(piece_list, value, screen, enemies)
+                poz_places, name = w_turn.instantiate_options(piece_list, value, screen, enemies, board_tiles)
 
                 sel = True
 
@@ -83,6 +83,7 @@ while True:
                 square.instantiate(colour=c, scr=screen)
                 board.add_tile(x=X, y=Y, sqr=square)
                 color += 1
+        print(board.tile_objects)
 
         white_pieces, black_pieces = board.set_pieces(df=df, scr=screen, w=white_pieces, b=black_pieces)
 
@@ -95,12 +96,14 @@ while True:
 
                 white_pieces, selecting, White_Turn, position_options,\
                     moving_name = main_turn_loop(white_pieces, selecting, White_Turn, position_options, moving_name,
-                                                 black_pieces)
+                                                 black_pieces, board.tile_objects)
+
 
             else:
                 black_pieces, selecting, White_Turn, position_options, \
                     moving_name = main_turn_loop(black_pieces, selecting,
-                                                 White_Turn, position_options, moving_name, white_pieces)
+                                                 White_Turn, position_options, moving_name, white_pieces,
+                                                 board.tile_objects)
 
             if event.type == pygame.QUIT:
                 pygame.quit()
