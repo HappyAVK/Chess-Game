@@ -107,7 +107,7 @@ class DynamicPiece(Piece):
 
                 atk = move
             case "King":
-                move = [80, 80, 80, 0, 0, 80, -80, -80, -80, 0, 0, -80]
+                move = [80, 80, 80, 0, 0, 80, -80, -80, -80, 0, 0, -80, -80, 80, 80, -80]
                 atk = move
             case "Queen":
                 for x_ in range(-640, 0, 80):
