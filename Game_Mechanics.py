@@ -9,7 +9,7 @@ df = pd.read_csv("Chess_piece_info.csv")
 
 class Turn:
     @staticmethod
-    def start_move(piece, piece_list, enemy_list, check_tiles):
+    def start_move(piece, piece_list, enemy_list, check_tiles, srcs):
         piece_check = []
         block_check = []
         move_state = False
@@ -32,15 +32,19 @@ class Turn:
             m_ = m_[:1]
 
         m_and_a = m_ + _a
+
+
         block_check = piece_check + _a
         # line 32 to 37 are to facilitate special pawn conditions
 
         more_blocked_spaces = tu.check_blocked_piece(piece_type=name, original_piece_pos=piece.topleft,
-                                                     blocked_spaces=block_check)  # second pass to remove blocked spaces
+                                                     blocked_spaces=block_check, movecheck=m_, scrn=srcs)  # second pass to remove blocked spaces
 
+       # print(m_and_a)
         piece_check = piece_check + more_blocked_spaces
 
         m_and_a = [p for p in m_and_a if p not in piece_check]  # Appending move list to blocked spaces
+
 
         piece_object = piece
 
@@ -68,7 +72,7 @@ class Turn:
 
         t = Turn()
         selections_, selected_piece = t.start_move(piece=chosen_piece, piece_list=pieces, enemy_list=opponents,
-                                                   check_tiles=tiles)
+                                                   check_tiles=tiles, srcs=scr)
 
         p_name = list(pieces.keys())[list(pieces.values()).index(selected_piece)]
 
@@ -101,31 +105,32 @@ class Turn:
 
         return old_list
 
-    def check_blocked_piece(self, piece_type, original_piece_pos, blocked_spaces):
+    def check_blocked_piece(self, piece_type, original_piece_pos, blocked_spaces, movecheck, scrn):
         unreachable_spaces = []
         blocked_spaces = [i for i in blocked_spaces if not isinstance(i, int)]
+        block_image_ = pygame.image.load("graphics/asmrvegeta.png").convert_alpha()
         match piece_type:
             case "Castle":
 
                 for x in blocked_spaces:
                     if x[1] == original_piece_pos[1]:  # x value
                         if x[0] > original_piece_pos[0]:
-                            for z in range(x[0]+80, 741, 80):
+                            for z in range(x[0]+80, 740, 80):
 
                                 unreachable_spaces.append([z, original_piece_pos[1]])
 
                         elif x[0] < original_piece_pos[0]:
-                            for z in range(0, x[0], 80):  # change to 100 if broken
+                            for z in range(20, x[0]-79, 80):  # change to 100 if broken
 
                                 unreachable_spaces.append([z, original_piece_pos[1]])
                     for y in blocked_spaces:
 
                         if y[0] == original_piece_pos[0]:  # y value
                             if y[1] > original_piece_pos[1]:
-                                for z in range(y[1]+80, 721, 80):
+                                for z in range(y[1]+80, 720, 80):
                                     unreachable_spaces.append([original_piece_pos[0], z])
                             elif y[1] < original_piece_pos[1]:
-                                for z in range(0, y[1], 80):
+                                for z in range(0, y[1]-79, 80):
                                     unreachable_spaces.append([original_piece_pos[0], z])
 
                 return unreachable_spaces
@@ -134,59 +139,77 @@ class Turn:
 
                 for x in blocked_spaces:
                     if x[0] > original_piece_pos[0] and x[1] > original_piece_pos[1]:
-                        for z in range(x[0] + 80, 741, 80):
-                            for w in range(x[1]+80, 721, 80):
-                                unreachable_spaces.append([z, w])
+                        for z in zip(range(x[0]+80, 741, 80), range(x[1]+80, 721, 80)):
+
+                            unreachable_spaces.append(list(z))
+
                     if x[0] < original_piece_pos[0] and x[1] < original_piece_pos[1]:
-                        for z in range (100, x[0], 80):
-                            for w in range(0, x[1], 80):
-                                unreachable_spaces.append([z, w])
+                        for z in zip(reversed(range(20, x[0]-79, 80)), reversed(range(0, x[1]-79, 80))):
+                            unreachable_spaces.append(list(z))
+
                     if x[0] > original_piece_pos[0] and x[1] < original_piece_pos[1]:
-                        for z in range(x[0] + 80, 741, 80):
-                            for w in range(0, x[1], 80):
-                                unreachable_spaces.append([z, w])
+                        for z in zip(range(x[0]+80, 740, 80), reversed(range(0, x[1]-79, 80))):
+
+                            unreachable_spaces.append(list(z))
+
                     if x[0] < original_piece_pos[0] and x[1] > original_piece_pos[1]:
-                        for z in range(100, x[0], 80):
-                            for w in range(x[1]+80, 721, 80):
-                                unreachable_spaces.append([z, w])
+                        for z in zip(reversed(range(20, x[0]-79, 80)),range(x[1]+80, 720, 80)):
+
+                            unreachable_spaces.append(list(z))
+                    for y in unreachable_spaces:
+                        rect = block_image_.get_rect(topleft=y)
+                        scrn.blit(block_image_, rect)
                 return unreachable_spaces
             case "Queen":
                 for x in blocked_spaces:
-                    if x[0] > original_piece_pos[0] and x[1] > original_piece_pos[1]:
-                        for z in range(x[0] + 80, 741, 80):
-                            for w in range(x[1] + 80, 721, 80):
-                                unreachable_spaces.append([z, w])
-                    if x[0] < original_piece_pos[0] and x[1] < original_piece_pos[1]:
-                        for z in range(100, x[0], 80):
-                            for w in range(0, x[1], 80):
-                                unreachable_spaces.append([z, w])
-                    if x[0] > original_piece_pos[0] and x[1] < original_piece_pos[1]:
-                        for z in range(x[0] + 80, 741, 80):
-                            for w in range(0, x[1], 80):
-                                unreachable_spaces.append([z, w])
-                    if x[0] < original_piece_pos[0] and x[1] > original_piece_pos[1]:
-                        for z in range(100, x[0], 80):
-                            for w in range(x[1] + 80, 721, 80):
-                                unreachable_spaces.append([z, w])
-                for x in blocked_spaces:
                     if x[1] == original_piece_pos[1]:  # x value
                         if x[0] > original_piece_pos[0]:
-                            for z in range(x[0] + 80, 741, 80):
+                            for z in range(x[0] + 80, 740, 80):
                                 unreachable_spaces.append([z, original_piece_pos[1]])
 
                         elif x[0] < original_piece_pos[0]:
-                            for z in range(0, x[0], 80):  # change to 100 if broken
+                            for z in range(20, x[0] - 79, 80):  # change to 100 if broken
 
                                 unreachable_spaces.append([z, original_piece_pos[1]])
                     for y in blocked_spaces:
 
                         if y[0] == original_piece_pos[0]:  # y value
                             if y[1] > original_piece_pos[1]:
-                                for z in range(y[1] + 80, 721, 80):
+                                for z in range(y[1] + 80, 720, 80):
                                     unreachable_spaces.append([original_piece_pos[0], z])
                             elif y[1] < original_piece_pos[1]:
-                                for z in range(0, y[1], 80):
+                                for z in range(0, y[1] - 79, 80):
                                     unreachable_spaces.append([original_piece_pos[0], z])
+                    for x in blocked_spaces:
+                        if x[0] > original_piece_pos[0] and x[1] > original_piece_pos[1]:
+                            for z in zip(range(x[0] + 80, 741, 80), range(x[1] + 80, 721, 80)):
+                                unreachable_spaces.append(list(z))
+
+                        if x[0] < original_piece_pos[0] and x[1] < original_piece_pos[1]:
+                            for z in zip(reversed(range(20, x[0] - 79, 80)), reversed(range(0, x[1] - 79, 80))):
+                                unreachable_spaces.append(list(z))
+
+                        if x[0] > original_piece_pos[0] and x[1] < original_piece_pos[1]:
+                            for z in zip(range(x[0] + 80, 740, 80), reversed(range(0, x[1] - 79, 80))):
+                                unreachable_spaces.append(list(z))
+
+                        if x[0] < original_piece_pos[0] and x[1] > original_piece_pos[1]:
+                            for z in zip(reversed(range(20, x[0] - 79, 80)), range(x[1] + 80, 720, 80)):
+                                unreachable_spaces.append(list(z))
+
+
+                    return unreachable_spaces
+            case "Pawn":
+                pawn_range = [y for y in blocked_spaces if y in movecheck]
+                print(pawn_range)
+                print(movecheck)
+                for n in pawn_range:
+                    if n[0] > original_piece_pos[0] and n[0] < original_piece_pos[0] + 81:
+                        unreachable_spaces = movecheck[0:2]
+                    elif n[0] > original_piece_pos[0]:
+                        unreachable_spaces = movecheck[0:2]
+                    else:
+                        unreachable_spaces = []
 
                 return unreachable_spaces
 
