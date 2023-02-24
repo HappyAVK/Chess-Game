@@ -203,11 +203,9 @@ class Turn:
                 e_list = []
                 for i, v in enemy_list.items():
                     e_list.append(list(v.topleft))
-                print(blocked_spaces, enemy_list)
+
                 pawn_range = [y for y in blocked_spaces if y in movecheck] + [e for e in e_list if e in movecheck]
-                print(pawn_range)
-                print(movecheck)
-                print(original_piece_pos, "Pos")
+
                 for n in pawn_range:
                     if n[1] < original_piece_pos[1] and n[1] > original_piece_pos[1]-81:
                         unreachable_spaces = movecheck
@@ -217,6 +215,20 @@ class Turn:
 
                 return unreachable_spaces
 
+            case "BPawn":
+                e_list = []
+                for i, v in enemy_list.items():
+                    e_list.append(list(v.topleft))
+
+                pawn_range = [y for y in blocked_spaces if y in movecheck] + [e for e in e_list if e in movecheck]
+
+                for n in pawn_range:
+                    if n[1] > original_piece_pos[1] and n[1] < original_piece_pos[1] + 81:
+                        unreachable_spaces = movecheck
+                    else:
+                        unreachable_spaces = movecheck[1:2]
+
+                return unreachable_spaces
         return [-1000, -1000]
 
 
