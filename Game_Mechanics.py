@@ -38,7 +38,7 @@ class Turn:
         # line 32 to 37 are to facilitate special pawn conditions
 
         more_blocked_spaces = tu.check_blocked_piece(piece_type=name, original_piece_pos=piece.topleft,
-                                                     blocked_spaces=block_check, movecheck=m_, scrn=srcs)  # second pass to remove blocked spaces
+                                                     blocked_spaces=block_check, movecheck=m_, scrn=srcs, enemy_list=enemy_list)  # second pass to remove blocked spaces
 
        # print(m_and_a)
         piece_check = piece_check + more_blocked_spaces
@@ -105,7 +105,7 @@ class Turn:
 
         return old_list
 
-    def check_blocked_piece(self, piece_type, original_piece_pos, blocked_spaces, movecheck, scrn):
+    def check_blocked_piece(self, piece_type, original_piece_pos, blocked_spaces, movecheck, scrn, enemy_list):
         unreachable_spaces = []
         blocked_spaces = [i for i in blocked_spaces if not isinstance(i, int)]
         block_image_ = pygame.image.load("graphics/asmrvegeta.png").convert_alpha()
@@ -200,16 +200,20 @@ class Turn:
 
                     return unreachable_spaces
             case "Pawn":
-                pawn_range = [y for y in blocked_spaces if y in movecheck]
+                e_list = []
+                for i, v in enemy_list.items():
+                    e_list.append(list(v.topleft))
+                print(blocked_spaces, enemy_list)
+                pawn_range = [y for y in blocked_spaces if y in movecheck] + [e for e in e_list if e in movecheck]
                 print(pawn_range)
                 print(movecheck)
+                print(original_piece_pos, "Pos")
                 for n in pawn_range:
-                    if n[0] > original_piece_pos[0] and n[0] < original_piece_pos[0] + 81:
-                        unreachable_spaces = movecheck[0:2]
-                    elif n[0] > original_piece_pos[0]:
-                        unreachable_spaces = movecheck[0:2]
+                    if n[1] < original_piece_pos[1] and n[1] > original_piece_pos[1]-81:
+                        unreachable_spaces = movecheck
                     else:
-                        unreachable_spaces = []
+                        unreachable_spaces = movecheck[1:2]
+
 
                 return unreachable_spaces
 
