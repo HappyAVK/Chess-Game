@@ -1,17 +1,17 @@
 Piece,White-position,Black-position,White-Image,Black-Image
-Pawn-1,A2,A7,graphics/chess test2.png,graphics/blowfish.png
-Pawn-2,B2,B7,graphics/chess test2.png,graphics/blowfish.png
-Pawn-3,C2,C7,graphics/chess test2.png,graphics/blowfish.png
-Pawn-4,D2,D7,graphics/chess test2.png,graphics/blowfish.png
-Pawn-5,E2,E7,graphics/chess test2.png,graphics/blowfish.png
-Pawn-6,F2,F7,graphics/chess test2.png,graphics/blowfish.png
-Pawn-7,G2,G7,graphics/chess test2.png,graphics/blowfish.png
-Pawn-8,H2,H7,graphics/chess test2.png,graphics/blowfish.png
-Rook-1,C1,C8,graphics/chess test2.png,graphics/blowfish.png
-Rook-2,F1,F8,graphics/chess test2.png,graphics/blowfish.png
-Knight-1,B1,B8,graphics/chess test2.png,graphics/blowfish.png
-Knight-2,G1,G8,graphics/chess test2.png,graphics/blowfish.png
-Castle-1,A1,H8,graphics/chess test2.png,graphics/blowfish.png
-Castle-2,H1,A8,graphics/chess test2.png,graphics/blowfish.png
-Queen-1,D1,D8,graphics/chess test2.png,graphics/blowfish.png
-King-1,E1,E8,graphics/chess test2.png,graphics/blowfish.png
+Pawn-1,A2,A7,graphics/chess test2.png,graphics/Pawn_Black.png
+Pawn-2,B2,B7,graphics/chess test2.png,graphics/Pawn_Black.png
+Pawn-3,C2,C7,graphics/chess test2.png,graphics/Pawn_Black.png
+Pawn-4,D2,D7,graphics/chess test2.png,graphics/Pawn_Black.png
+Pawn-5,E2,E7,graphics/chess test2.png,graphics/Pawn_Black.png
+Pawn-6,F2,F7,graphics/chess test2.png,graphics/Pawn_Black.png
+Pawn-7,G2,G7,graphics/chess test2.png,graphics/Pawn_Black.png
+Pawn-8,H2,H7,graphics/chess test2.png,graphics/Pawn_Black.png
+Rook-1,C1,C8,graphics/Bishop_White.png,graphics/Bishop_Black.png
+Rook-2,F1,F8,graphics/Bishop_White.png,graphics/Bishop_Black.png
+Knight-1,B1,B8,graphics/Knight_White.png,graphics/Knight_Black.png
+Knight-2,G1,G8,graphics/Knight_White.png,graphics/Knight_Black.png
+Castle-1,A1,H8,graphics/Castle_White.png,graphics/Castle_Black.png
+Castle-2,H1,A8,graphics/Castle_White.png,graphics/Castle_Black.png
+Queen-1,D1,D8,graphics/Queen_White.png,graphics/Queen_Black.png
+King-1,E1,E8,graphics/King_White.png,graphics/King_Black.png
