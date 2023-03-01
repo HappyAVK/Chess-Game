@@ -1,6 +1,7 @@
 import pygame
 
 
+
 class Piece:
     def __init__(self):
         self.movement = [0, -80, 0, -160]  # x and y var for pygame
@@ -207,6 +208,7 @@ class DynamicPiece(Piece):
                 moved = True
 
         return moved
+
 
 
 

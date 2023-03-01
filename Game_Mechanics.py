@@ -5,7 +5,7 @@ from pieces import Piece
 from game_board import Board
 p_places = []
 df = pd.read_csv("Chess_piece_info.csv")
-
+from king_check_conditions import get_checked_tiles
 
 class Turn:
     @staticmethod
@@ -32,7 +32,7 @@ class Turn:
             m_ = m_[:1]
 
         k = tu.remove_the_king(enemy_list)
-        print(k, _a)
+
         _a = [a for a in _a if a not in k]
 
         m_and_a = m_ + _a
@@ -41,10 +41,16 @@ class Turn:
         # line 32 to 37 are to facilitate special pawn conditions
 
         more_blocked_spaces = tu.check_blocked_piece(piece_type=name, original_piece_pos=piece.topleft,
-                                                     blocked_spaces=block_check, movecheck=m_, scrn=srcs, enemy_list=enemy_list)  # second pass to remove blocked spaces
+                                                     blocked_spaces=block_check, movecheck=m_, enemy_list=enemy_list)  # second pass to remove blocked spaces
 
        # print(m_and_a)
         piece_check = piece_check + more_blocked_spaces
+
+        if name == "King":
+            kay = KingData(enemies=enemy_list)
+            king_checked_positions = kay.identify_attackers(piece_list, scrn=srcs)
+
+            piece_check = piece_check + king_checked_positions
 
         m_and_a = [p for p in m_and_a if p not in piece_check]  # Appending move list to blocked spaces
 
@@ -110,10 +116,9 @@ class Turn:
 
         return old_list, enemy_list
 
-    def check_blocked_piece(self, piece_type, original_piece_pos, blocked_spaces, movecheck, scrn, enemy_list):
+    def check_blocked_piece(self, piece_type, original_piece_pos, blocked_spaces, movecheck, enemy_list):
         unreachable_spaces = []
         blocked_spaces = [i for i in blocked_spaces if not isinstance(i, int)]
-        block_image_ = pygame.image.load("graphics/asmrvegeta.png").convert_alpha()
 
         match piece_type:
             case "Castle":
@@ -162,9 +167,6 @@ class Turn:
                         for z in zip(reversed(range(20, x[0]-79, 80)),range(x[1]+80, 720, 80)):
 
                             unreachable_spaces.append(list(z))
-                    for y in unreachable_spaces:
-                        rect = block_image_.get_rect(topleft=y)
-                        scrn.blit(block_image_, rect)
 
                 return unreachable_spaces
             case "Queen":
@@ -237,7 +239,7 @@ class Turn:
                 return unreachable_spaces
             case "King":
                 for i, v in enemy_list.items():
-                    unreachable_spaces.append(v.topleft)
+                    unreachable_spaces.append(list(v.topleft))
 
                 return unreachable_spaces
         return [-1000, -1000]
@@ -251,8 +253,6 @@ class Turn:
             if v.topleft == piece_pos:
                 taken_piece = list(enemy_list.keys())[list(enemy_list.values()).index(v)]
 
-                print(taken_piece)
-
                 del enemy_list[taken_piece]
 
         return enemy_list
@@ -265,7 +265,6 @@ class Turn:
                 king_list.append(list(v.topleft))
 
         return king_list
-
 
 # if __name__ == "__main__":
         # pygame.init()
@@ -281,3 +280,41 @@ class Turn:
     #         if event.type == pygame.QUIT:
     #             pygame.quit()
     #             exit()
+
+
+class KingData:
+    def __init__(self, enemies):
+        self.enemies = enemies
+
+    def identify_attackers(self, ally_positions, scrn):
+        image_ = pygame.image.load("graphics/Position_marker.png").convert_alpha()
+        pieces = DynamicPiece()
+        turns = Turn()
+        attacker_options = []
+        for i, v in self.enemies.items():
+            piece_check = []
+            name = i[:-2]
+
+            for ind, val in self.enemies.items():
+                piece_check.append(list(val.topleft))
+
+            data_m, data_a = pieces.identify(name)
+            a = get_checked_tiles(v.topleft, data_a)
+
+            block_check = piece_check + list(a)
+
+            blocked_spaces = turns.check_blocked_piece(piece_type=name, original_piece_pos=v.topleft,
+                                                       blocked_spaces=block_check, movecheck=[-1000, -1000],
+                                                       enemy_list=ally_positions)
+
+            b = blocked_spaces + piece_check
+
+            a = [x for x in a if x is not [] or x not in b]
+
+            attacker_options = attacker_options + a
+            # for bs in blocked_spaces:
+            #     rec = image_.get_rect(topleft=bs)
+            #     scrn.blit(image_, rec)
+        print(attacker_options)
+        return attacker_options
+
