@@ -113,5 +113,11 @@ class Board:
 
                 color += 1
 
+class DisposalTray:
+    def __init__(self):
+        x = self.x
+        y = self.y
+        w = self.h
+        h = self.h
 
 

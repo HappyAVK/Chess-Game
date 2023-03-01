@@ -31,8 +31,11 @@ class Turn:
         if move_state:
             m_ = m_[:1]
 
-        m_and_a = m_ + _a
+        k = tu.remove_the_king(enemy_list)
+        print(k, _a)
+        _a = [a for a in _a if a not in k]
 
+        m_and_a = m_ + _a
 
         block_check = piece_check + _a
         # line 32 to 37 are to facilitate special pawn conditions
@@ -68,7 +71,7 @@ class Turn:
     @staticmethod
     def instantiate_options(pieces, chosen_piece, scr, opponents, tiles):
         p_places.clear()
-        image_ = pygame.image.load("graphics/Pawn_Black.png").convert_alpha()
+        image_ = pygame.image.load("graphics/Position_marker.png").convert_alpha()
 
         t = Turn()
         selections_, selected_piece = t.start_move(piece=chosen_piece, piece_list=pieces, enemy_list=opponents,
@@ -87,7 +90,7 @@ class Turn:
         return p_places, p_name
 
     @staticmethod
-    def make_final_move(_name, turn_type, p, old_list, scr):
+    def make_final_move(_name, turn_type, p, old_list, scr, enemy_list):
         if _name[:2] == "BP":
             data_name = _name[1:]
         else:
@@ -101,14 +104,17 @@ class Turn:
 
         new_pos = turn_type.get_new_place(p, replace_img, scr)
 
+        enemy_list = turn_type.take_piece(enemy_list, new_pos.topleft)
+
         old_list[_name] = new_pos
 
-        return old_list
+        return old_list, enemy_list
 
     def check_blocked_piece(self, piece_type, original_piece_pos, blocked_spaces, movecheck, scrn, enemy_list):
         unreachable_spaces = []
         blocked_spaces = [i for i in blocked_spaces if not isinstance(i, int)]
         block_image_ = pygame.image.load("graphics/asmrvegeta.png").convert_alpha()
+
         match piece_type:
             case "Castle":
 
@@ -159,6 +165,7 @@ class Turn:
                     for y in unreachable_spaces:
                         rect = block_image_.get_rect(topleft=y)
                         scrn.blit(block_image_, rect)
+
                 return unreachable_spaces
             case "Queen":
                 for x in blocked_spaces:
@@ -212,7 +219,6 @@ class Turn:
                     else:
                         unreachable_spaces = movecheck[1:2]
 
-
                 return unreachable_spaces
 
             case "BPawn":
@@ -229,7 +235,36 @@ class Turn:
                         unreachable_spaces = movecheck[1:2]
 
                 return unreachable_spaces
+            case "King":
+                for i, v in enemy_list.items():
+                    unreachable_spaces.append(v.topleft)
+
+                return unreachable_spaces
         return [-1000, -1000]
+
+    @staticmethod
+    def take_piece(enemy_list, piece_pos):
+
+
+        for v in list(enemy_list.values()):
+
+            if v.topleft == piece_pos:
+                taken_piece = list(enemy_list.keys())[list(enemy_list.values()).index(v)]
+
+                print(taken_piece)
+
+                del enemy_list[taken_piece]
+
+        return enemy_list
+
+    def remove_the_king(self, enemy_list):
+        king_list = []
+        for i, v in enemy_list.items():
+
+            if i[:-2] == "King":
+                king_list.append(list(v.topleft))
+
+        return king_list
 
 
 # if __name__ == "__main__":

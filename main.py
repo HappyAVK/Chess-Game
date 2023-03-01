@@ -37,7 +37,7 @@ def main_turn_loop(piece_list, sel, current_turn, poz_places, name, enemies, boa
 
             if v.collidepoint(mouse):
 
-                piece_list = w_turn.make_final_move(name, w_turn, v, piece_list, screen)
+                piece_list, enemies = w_turn.make_final_move(name, w_turn, v, piece_list, screen, enemies)
 
                 board.draw_board(screen)
 
@@ -59,7 +59,7 @@ def main_turn_loop(piece_list, sel, current_turn, poz_places, name, enemies, boa
         poz_places = []
         sel = False
 
-    return piece_list, sel, current_turn, poz_places, name
+    return piece_list, sel, current_turn, poz_places, name, enemies
 
 
 while True:
@@ -95,13 +95,14 @@ while True:
             if White_Turn:
 
                 white_pieces, selecting, White_Turn, position_options,\
-                    moving_name = main_turn_loop(white_pieces, selecting, White_Turn, position_options, moving_name,
-                                                 black_pieces, board.tile_objects)
+                    moving_name, black_pieces = main_turn_loop(white_pieces, selecting,
+                                                               White_Turn, position_options, moving_name, black_pieces,
+                                                               board.tile_objects)
 
 
             else:
                 black_pieces, selecting, White_Turn, position_options, \
-                    moving_name = main_turn_loop(black_pieces, selecting,
+                    moving_name, white_pieces = main_turn_loop(black_pieces, selecting,
                                                  White_Turn, position_options, moving_name, white_pieces,
                                                  board.tile_objects)
 
