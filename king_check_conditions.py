@@ -17,7 +17,7 @@ def get_checked_tiles(pos, attack_data):
             attack_list.append(n)
         if len(attack_list) >= 2:
             for check in attack_list:
-                if check > 660 or check < 80:
+                if check > 661 or check < 0:
                     attack_list = []
 
             attack_options.append(attack_list)

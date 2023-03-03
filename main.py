@@ -3,6 +3,7 @@ from sys import exit
 import pandas as pd
 import Game_Mechanics
 from game_board import Square, Board
+
 pygame.init()
 screen = pygame.display.set_mode((1366, 768))
 pygame.display.set_caption("Chess")
@@ -20,16 +21,26 @@ moving_name = ""
 
 def main_turn_loop(piece_list, sel, current_turn, poz_places, name, enemies, board_tiles):
     w_turn = Game_Mechanics.Turn()
-
+    pre_turn_check = Game_Mechanics.KingData(enemies)
+    in_check = pre_turn_check.pre_turn_check_detection(piece_list, screen)
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and not sel:
 
         for key, value in piece_list.items():
 
             if value.collidepoint(mouse):
+                if not in_check:
+                    poz_places, name = w_turn.instantiate_options(piece_list, value, screen, enemies, board_tiles,
+                                                                  in_check)
 
-                poz_places, name = w_turn.instantiate_options(piece_list, value, screen, enemies, board_tiles)
-
-                sel = True
+                    sel = True
+                elif in_check:
+                    poz_places, name = w_turn.instantiate_options(piece_list, value, screen, enemies, board_tiles,
+                                                                  in_check)
+                    print(name)
+                    if name == "King-1":
+                        sel = True
+                    else:
+                        sel = False
 
     if event.type == pygame.MOUSEBUTTONDOWN and event.button == 1 and sel:
 

@@ -3,9 +3,12 @@ from pieces import DynamicPiece
 import pandas as pd
 from pieces import Piece
 from game_board import Board
+from king_check_conditions import get_checked_tiles
 p_places = []
 df = pd.read_csv("Chess_piece_info.csv")
-from king_check_conditions import get_checked_tiles
+
+check = False
+
 
 class Turn:
     @staticmethod
@@ -48,7 +51,7 @@ class Turn:
 
         if name == "King":
             kay = KingData(enemies=enemy_list)
-            king_checked_positions = kay.identify_attackers(piece_list, scrn=srcs)
+            king_checked_positions = kay.identify_attackers(piece_list, srcs)
 
             piece_check = piece_check + king_checked_positions
 
@@ -75,7 +78,7 @@ class Turn:
         return rect_pos
 
     @staticmethod
-    def instantiate_options(pieces, chosen_piece, scr, opponents, tiles):
+    def instantiate_options(pieces, chosen_piece, scr, opponents, tiles, check_check):
         p_places.clear()
         image_ = pygame.image.load("graphics/Position_marker.png").convert_alpha()
 
@@ -84,14 +87,16 @@ class Turn:
                                                    check_tiles=tiles, srcs=scr)
 
         p_name = list(pieces.keys())[list(pieces.values()).index(selected_piece)]
+        if check_check and p_name != "King-1":
+            pass
+        else:
+            for index, i in enumerate(selections_):
 
-        for index, i in enumerate(selections_):
+                pos_option_rect = image_.get_rect(topleft=i)
 
-            pos_option_rect = image_.get_rect(topleft=i)
+                scr.blit(image_, pos_option_rect)
 
-            scr.blit(image_, pos_option_rect)
-
-            p_places.append(pos_option_rect)
+                p_places.append(pos_option_rect)
 
         return p_places, p_name
 
@@ -134,15 +139,15 @@ class Turn:
                             for z in range(20, x[0]-79, 80):  # change to 100 if broken
 
                                 unreachable_spaces.append([z, original_piece_pos[1]])
-                    for y in blocked_spaces:
+                for y in blocked_spaces:
 
-                        if y[0] == original_piece_pos[0]:  # y value
-                            if y[1] > original_piece_pos[1]:
-                                for z in range(y[1]+80, 720, 80):
-                                    unreachable_spaces.append([original_piece_pos[0], z])
-                            elif y[1] < original_piece_pos[1]:
-                                for z in range(0, y[1]-79, 80):
-                                    unreachable_spaces.append([original_piece_pos[0], z])
+                    if y[0] == original_piece_pos[0]:  # y value
+                        if y[1] > original_piece_pos[1]:
+                            for z in range(y[1]+80, 720, 80):
+                                unreachable_spaces.append([original_piece_pos[0], z])
+                        elif y[1] < original_piece_pos[1]:
+                            for z in range(0, y[1]-79, 80):
+                                unreachable_spaces.append([original_piece_pos[0], z])
 
                 return unreachable_spaces
 
@@ -170,44 +175,11 @@ class Turn:
 
                 return unreachable_spaces
             case "Queen":
-                for x in blocked_spaces:
-                    if x[1] == original_piece_pos[1]:  # x value
-                        if x[0] > original_piece_pos[0]:
-                            for z in range(x[0] + 80, 740, 80):
-                                unreachable_spaces.append([z, original_piece_pos[1]])
+                horizontal = castle_check(blocked_spaces, original_piece_pos)
+                vertical = rook_check(blocked_spaces, original_piece_pos)
+                unreachable_spaces = vertical + horizontal
 
-                        elif x[0] < original_piece_pos[0]:
-                            for z in range(20, x[0] - 79, 80):  # change to 100 if broken
-
-                                unreachable_spaces.append([z, original_piece_pos[1]])
-                    for y in blocked_spaces:
-
-                        if y[0] == original_piece_pos[0]:  # y value
-                            if y[1] > original_piece_pos[1]:
-                                for z in range(y[1] + 80, 720, 80):
-                                    unreachable_spaces.append([original_piece_pos[0], z])
-                            elif y[1] < original_piece_pos[1]:
-                                for z in range(0, y[1] - 79, 80):
-                                    unreachable_spaces.append([original_piece_pos[0], z])
-                    for x in blocked_spaces:
-                        if x[0] > original_piece_pos[0] and x[1] > original_piece_pos[1]:
-                            for z in zip(range(x[0] + 80, 741, 80), range(x[1] + 80, 721, 80)):
-                                unreachable_spaces.append(list(z))
-
-                        if x[0] < original_piece_pos[0] and x[1] < original_piece_pos[1]:
-                            for z in zip(reversed(range(20, x[0] - 79, 80)), reversed(range(0, x[1] - 79, 80))):
-                                unreachable_spaces.append(list(z))
-
-                        if x[0] > original_piece_pos[0] and x[1] < original_piece_pos[1]:
-                            for z in zip(range(x[0] + 80, 740, 80), reversed(range(0, x[1] - 79, 80))):
-                                unreachable_spaces.append(list(z))
-
-                        if x[0] < original_piece_pos[0] and x[1] > original_piece_pos[1]:
-                            for z in zip(reversed(range(20, x[0] - 79, 80)), range(x[1] + 80, 720, 80)):
-                                unreachable_spaces.append(list(z))
-
-
-                    return unreachable_spaces
+                return unreachable_spaces
             case "Pawn":
                 e_list = []
                 for i, v in enemy_list.items():
@@ -291,30 +263,93 @@ class KingData:
         pieces = DynamicPiece()
         turns = Turn()
         attacker_options = []
+        piece_check = []
+        ally_check = []
+        for ind, val in self.enemies.items():
+            piece_check.append(val.topleft)
+        for ie, ve in ally_positions.items():
+            ally_check.append(ve.topleft)
         for i, v in self.enemies.items():
-            piece_check = []
+
             name = i[:-2]
 
-            for ind, val in self.enemies.items():
-                piece_check.append(list(val.topleft))
-
             data_m, data_a = pieces.identify(name)
-            a = get_checked_tiles(v.topleft, data_a)
+            a = get_checked_tiles(list(v.topleft), data_a)
 
-            block_check = piece_check + list(a)
+            block_check = piece_check + ally_check
 
-            blocked_spaces = turns.check_blocked_piece(piece_type=name, original_piece_pos=v.topleft,
+            blocked_spaces = turns.check_blocked_piece(piece_type=name, original_piece_pos=list(v.topleft),
                                                        blocked_spaces=block_check, movecheck=[-1000, -1000],
                                                        enemy_list=ally_positions)
 
             b = blocked_spaces + piece_check
 
-            a = [x for x in a if x is not [] or x not in b]
+            a = [x for x in a if x is not [] and x not in b]
 
             attacker_options = attacker_options + a
-            # for bs in blocked_spaces:
-            #     rec = image_.get_rect(topleft=bs)
-            #     scrn.blit(image_, rec)
-        print(attacker_options)
+
+            for bs in attacker_options:
+
+                x = tuple(bs)
+                rec = image_.get_rect(topleft=x)
+                scrn.blit(image_, rec)
+
         return attacker_options
 
+    def pre_turn_check_detection(self, ally_pieces, scrn):
+        check_condition = False
+
+        check_data = KingData.identify_attackers(self, ally_pieces, scrn)
+
+        for pos in check_data:
+            if list(ally_pieces["King-1"].topleft) == pos:
+                check_condition = True
+
+        print(check_condition)
+
+
+        return check_condition
+
+def castle_check(blocked_spaces, original_piece_pos):
+    unreachable_spaces = []
+    for x in blocked_spaces:
+        if x[1] == original_piece_pos[1]:  # x value
+            if x[0] > original_piece_pos[0]:
+                for z in range(x[0] + 80, 740, 80):
+                    unreachable_spaces.append([z, original_piece_pos[1]])
+
+            elif x[0] < original_piece_pos[0]:
+                for z in range(20, x[0] - 79, 80):  # change to 100 if broken
+
+                    unreachable_spaces.append([z, original_piece_pos[1]])
+    for y in blocked_spaces:
+
+        if y[0] == original_piece_pos[0]:  # y value
+            if y[1] > original_piece_pos[1]:
+                for z in range(y[1] + 80, 720, 80):
+                    unreachable_spaces.append([original_piece_pos[0], z])
+            elif y[1] < original_piece_pos[1]:
+                for z in range(0, y[1] - 79, 80):
+                    unreachable_spaces.append([original_piece_pos[0], z])
+
+    return unreachable_spaces
+
+def rook_check(blocked_spaces, original_piece_pos):
+    unreachable_spaces = []
+    for x in blocked_spaces:
+        if x[0] > original_piece_pos[0] and x[1] > original_piece_pos[1]:
+            for z in zip(range(x[0] + 80, 741, 80), range(x[1] + 80, 721, 80)):
+                unreachable_spaces.append(list(z))
+
+        if x[0] < original_piece_pos[0] and x[1] < original_piece_pos[1]:
+            for z in zip(reversed(range(20, x[0] - 79, 80)), reversed(range(0, x[1] - 79, 80))):
+                unreachable_spaces.append(list(z))
+
+        if x[0] > original_piece_pos[0] and x[1] < original_piece_pos[1]:
+            for z in zip(range(x[0] + 80, 740, 80), reversed(range(0, x[1] - 79, 80))):
+                unreachable_spaces.append(list(z))
+
+        if x[0] < original_piece_pos[0] and x[1] > original_piece_pos[1]:
+            for z in zip(reversed(range(20, x[0] - 79, 80)), range(x[1] + 80, 720, 80)):
+                unreachable_spaces.append(list(z))
+    return unreachable_spaces
